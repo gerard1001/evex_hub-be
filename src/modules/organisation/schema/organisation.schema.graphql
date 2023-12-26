@@ -1,0 +1,27 @@
+type Org {
+  id: ID!
+  name: String!
+  type: String!
+  email: String!
+  password: String
+  phone: String!
+  location: String!
+  images: String
+  media: String
+}
+
+input OrgInput {
+  name: String!
+  type: String!
+  email: String!
+  phone: String!
+  location: String!
+  media: String
+}
+
+type Query {
+  getOrgs: [Org]
+  getOrg(id: ID!): Org
+}
+
+# type Mutation {}

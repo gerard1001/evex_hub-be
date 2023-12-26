@@ -1,0 +1,11 @@
+scalar JSON
+
+type TResponse {
+  statusCode: Int!
+  message: String!
+  data: JSON
+}
+
+type Query {
+  welcomeMsg: String
+}
