@@ -1,0 +1,18 @@
+type Event {
+  id: ID!
+  type: String!
+}
+
+input EventInput {
+  type: String!
+  prfnIds: String
+}
+
+type Query {
+  getEvents: [Event]
+  getEvent(id: ID!): Event
+}
+
+type Mutation {
+  createEvent(eventInput: EventInput!): Event!
+}

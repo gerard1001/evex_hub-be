@@ -9,6 +9,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { Neo4jModule } from './database/neo4j/neo4j.module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { Neo4jModule } from './database/neo4j/neo4j.module';
     EventModule,
     OrganisationModule,
     ProfessionModule,
+    UserModule,
   ],
   providers: [AppService, AppResolver],
 })

@@ -19,9 +19,24 @@ input OrgInput {
   media: String
 }
 
+type OrgPrfnRel {
+  id: ID!
+  experinceTime: String!
+  description: String!
+}
+
+input OrgPrfnInput {
+  orgId: String!
+  prfnId: String!
+  experinceTime: String! # You can provide a period selection
+  description: String!
+}
+
 type Query {
   getOrgs: [Org]
   getOrg(id: ID!): Org
 }
 
-# type Mutation {}
+type Mutation {
+  linkProfession(orgPrfnInput: OrgPrfnInput!): OrgPrfnRel!
+}

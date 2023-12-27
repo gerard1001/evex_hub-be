@@ -1,0 +1,19 @@
+type Profession {
+  id: ID!
+  name: String!
+  description: String!
+}
+
+input ProfessionInput {
+  name: String!
+  description: String!
+}
+
+type Query {
+  getProfessions: [Profession]
+  getProfession(id: ID!): Profession
+}
+
+type Mutation {
+  createProfession(professionInput: ProfessionInput!): Profession
+}

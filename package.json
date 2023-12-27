@@ -18,7 +18,9 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "schema:gen": "ts-node generate-typings"
+    "schema:gen": "ts-node generate-typings",
+    "seed": "yarn run seed:undo && nestjs-command seed:profession && nestjs-command seed:event",
+    "seed:undo": "nestjs-command remove:profession && nestjs-command  remove:event"
   },
   "dependencies": {
     "@apollo/server": "^4.9.5",
@@ -39,6 +41,7 @@
     "joi": "^17.11.0",
     "multer": "^1.4.5-lts.1",
     "neo4j-driver": "^5.15.0",
+    "nestjs-command": "^3.1.4",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "ts-morph": "^21.0.1",
