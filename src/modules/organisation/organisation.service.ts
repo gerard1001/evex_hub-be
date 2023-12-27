@@ -3,19 +3,35 @@ import { QueryRepository } from 'src/database/neo4j/query.repository';
 import { CreateOrgInput } from './types/organisation.create.types';
 import { generateUuid } from 'src/utils/uuid.util';
 import { CloudinaryService } from 'src/config/cloudinary/cloudinary.service';
+import { OrgPrfnInput } from 'src/database/graphql/graphql';
+import { ProfessionService } from '../profession/profession.service';
 
 @Injectable()
 export class OrganisationService {
   constructor(
     private readonly queryRepo: QueryRepository,
     private readonly cloudinaryService: CloudinaryService,
+    private readonly professionService: ProfessionService,
   ) {}
 
   async createOrg(
     orgInput: CreateOrgInput,
     files: { images: Express.Multer.File[] },
   ): Promise<any> {
-    const { name, type, email, location, phone, media } = orgInput;
+    const { name, type, email, location, phone, media, prfns } = orgInput;
+
+    const objArr = [];
+
+    for (let i = 0; i < prfns.length; i++) {
+      const obj = {};
+      obj['id'] = prfns[i]?.split('::')[0];
+      obj['experinceTime'] = prfns[i]?.split('::')[1];
+      obj['description'] = prfns[i]?.split('::')[2];
+
+      objArr.push(obj);
+    }
+
+    console.log(objArr);
 
     const images = [];
     for (let i = 0; i < files?.images?.length; i++) {
@@ -33,17 +49,34 @@ export class OrganisationService {
       .initQuery()
       .raw(
         `
-        MERGE (org:Organisation { name: '${name}' })
-        ON CREATE SET org.id = '${generateUuid()}'
-        ON CREATE SET org.type = '${type}'
-        ON CREATE SET org.type = '${type}'
-        ON CREATE SET org.email = '${email}'
-        ON CREATE SET org.phone = '${phone}'
-        ON CREATE SET org.location = '${location}'
-        ON CREATE SET org.media = '${media}'
-        ON CREATE SET org.images = '${images}'
+        MERGE (org:Organisation { name: $name })
+        ON CREATE SET org.id = $orgId,
+                      org.type = $type,
+                      org.email = $email,
+                      org.phone = $phone,
+                      org.location = $location,
+                      org.media = $media
+        WITH org
+        UNWIND $objArr AS obj
+        MATCH (prfn:Profession { id: obj.id })
+        MERGE (org)-[rel:CAN_OPERATE]->(prfn)
+        ON CREATE SET rel.id = $relId,
+                      rel.experinceTime = obj.experinceTime,
+                      rel.description = obj.description
         RETURN org
         `,
+        {
+          orgId: generateUuid(),
+          name,
+          type,
+          email,
+          phone,
+          location,
+          media,
+          images,
+          objArr,
+          relId: generateUuid(),
+        },
       )
       .run();
 
@@ -95,18 +128,58 @@ export class OrganisationService {
       .initQuery()
       .raw(
         `
-        MATCH (org:Organisation {id: '${id}'}) RETURN org
+        MATCH (org:Organisation {id: $id}) RETURN org
         `,
+        { id },
       )
       .run();
 
     if (org?.length > 0) {
       const {
-        org: { identity, properties },
+        org: { properties },
       } = org[0];
 
       return {
         id: properties.id,
+        ...properties,
+      };
+    }
+  }
+
+  async linkProfession(orgPrfnInput: OrgPrfnInput): Promise<any> {
+    const { prfnId, orgId, experinceTime, description } = orgPrfnInput;
+    const orgExist = await this.getOrg(orgId);
+    if (!orgExist) {
+      throw new HttpException(
+        'Organisation was not found',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const prfnExist = await this.professionService.getProfession(prfnId);
+    if (!prfnExist) {
+      throw new HttpException('Profession was not found', HttpStatus.NOT_FOUND);
+    }
+    const rel = await this.queryRepo
+      .initQuery()
+      .raw(
+        `
+      MATCH (org:Organisation { id: '${orgId}' })
+      MATCH (prfn:Profession { id: '${prfnId}' })
+      MERGE (org) -[rel:CAN_OPERATE]-> (prfn)
+      ON CREATE SET rel.id = '${generateUuid()}',
+                    rel.experinceTime = '${experinceTime}',
+                    rel.description = '${description}'
+      RETURN rel
+      `,
+      )
+      .run();
+
+    if (rel?.length > 0) {
+      const {
+        rel: { properties },
+      } = rel[0];
+
+      return {
         ...properties,
       };
     }

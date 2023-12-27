@@ -3,6 +3,8 @@ import {
   Controller,
   HttpException,
   HttpStatus,
+  Param,
+  Patch,
   Post,
   UploadedFiles,
   UseInterceptors,
@@ -16,7 +18,6 @@ export class OrganisationController {
   constructor(private readonly orgService: OrganisationService) {}
 
   @Post()
-  @Post('upload')
   @UseInterceptors(FileFieldsInterceptor([{ name: 'images', maxCount: 2 }]))
   async createOrg(
     @Body() orgInput: CreateOrgInput,
