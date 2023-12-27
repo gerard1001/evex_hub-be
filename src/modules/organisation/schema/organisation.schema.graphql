@@ -17,6 +17,7 @@ input OrgInput {
   phone: String!
   location: String!
   media: String
+  prfns: String
 }
 
 type OrgPrfnRel {

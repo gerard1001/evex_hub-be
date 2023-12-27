@@ -30,7 +30,6 @@ export class EventSeed {
         MATCH (prfn:Profession {id: prfnId})
         MERGE (event3)-[:MIGHT_REQUIRE]->(prfn)
 
-
         MERGE (event4:Event { id: 'e83cd03c-d760-4f58-b35d-c42cfa54cf0d', type: 'Birthday Parties' })
         WITH event4
         UNWIND ['ecb2afeb-ed23-46e1-86d7-8465dc8cc586', 'af30820b-2142-4fa4-b117-3213e3c60edc',  '78d51ec0-5908-4adf-a898-8150392054e2', '456dfedf-0da0-44a3-9c4e-b64c8dab6c23'] AS prfnId

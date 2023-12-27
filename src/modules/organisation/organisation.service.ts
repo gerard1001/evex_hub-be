@@ -18,7 +18,20 @@ export class OrganisationService {
     orgInput: CreateOrgInput,
     files: { images: Express.Multer.File[] },
   ): Promise<any> {
-    const { name, type, email, location, phone, media } = orgInput;
+    const { name, type, email, location, phone, media, prfns } = orgInput;
+
+    const objArr = [];
+
+    for (let i = 0; i < prfns.length; i++) {
+      const obj = {};
+      obj['id'] = prfns[i]?.split('::')[0];
+      obj['experinceTime'] = prfns[i]?.split('::')[1];
+      obj['description'] = prfns[i]?.split('::')[2];
+
+      objArr.push(obj);
+    }
+
+    console.log(objArr);
 
     const images = [];
     for (let i = 0; i < files?.images?.length; i++) {
@@ -42,8 +55,14 @@ export class OrganisationService {
                       org.email = $email,
                       org.phone = $phone,
                       org.location = $location,
-                      org.media = $media,
-                      org.images = $images
+                      org.media = $media
+        WITH org
+        UNWIND $objArr AS obj
+        MATCH (prfn:Profession { id: obj.id })
+        MERGE (org)-[rel:CAN_OPERATE]->(prfn)
+        ON CREATE SET rel.id = $relId,
+                      rel.experinceTime = obj.experinceTime,
+                      rel.description = obj.description
         RETURN org
         `,
         {
@@ -55,6 +74,8 @@ export class OrganisationService {
           location,
           media,
           images,
+          objArr,
+          relId: generateUuid(),
         },
       )
       .run();

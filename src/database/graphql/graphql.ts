@@ -20,6 +20,7 @@ export class OrgInput {
     phone: string;
     location: string;
     media?: Nullable<string>;
+    prfns?: Nullable<string>;
 }
 
 export class OrgPrfnInput {
@@ -32,6 +33,15 @@ export class OrgPrfnInput {
 export class ProfessionInput {
     name: string;
     description: string;
+}
+
+export class UserInput {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    phone: string;
+    location?: Nullable<string>;
 }
 
 export class TResponse {
@@ -54,6 +64,10 @@ export abstract class IQuery {
     abstract getProfessions(): Nullable<Nullable<Profession>[]> | Promise<Nullable<Nullable<Profession>[]>>;
 
     abstract getProfession(id: string): Nullable<Profession> | Promise<Nullable<Profession>>;
+
+    abstract getUsers(): Nullable<Nullable<User>[]> | Promise<Nullable<Nullable<User>[]>>;
+
+    abstract getUser(id: string): User | Promise<User>;
 }
 
 export class Event {
@@ -67,6 +81,8 @@ export abstract class IMutation {
     abstract linkProfession(orgPrfnInput: OrgPrfnInput): OrgPrfnRel | Promise<OrgPrfnRel>;
 
     abstract createProfession(professionInput: ProfessionInput): Nullable<Profession> | Promise<Nullable<Profession>>;
+
+    abstract userRegister(userInput: UserInput): User | Promise<User>;
 }
 
 export class Org {
@@ -91,6 +107,16 @@ export class Profession {
     id: string;
     name: string;
     description: string;
+}
+
+export class User {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    password?: Nullable<string>;
+    phone: string;
+    location?: Nullable<string>;
 }
 
 export type JSON = any;

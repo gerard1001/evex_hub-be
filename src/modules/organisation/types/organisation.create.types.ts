@@ -24,4 +24,8 @@ export class CreateOrgInput {
   @IsString()
   @IsOptional()
   readonly media: string;
+
+  @IsArray()
+  @IsOptional()
+  readonly prfns: any;
 }
