@@ -1,0 +1,26 @@
+type Ceremony {
+  id: ID!
+  date: String!
+  duration: String
+  location: String! #Preferance Province, District, sector?
+  venue: String
+}
+
+input CeremonyInput {
+  host: String!
+  events: String!
+  date: String!
+  duration: String
+  location: String!
+  venue: String
+}
+
+type Query {
+  getCeremony(id: ID): Ceremony
+  getCeremonies: [Ceremony]
+}
+
+type Mutation {
+  createCeremony(ceremonyInput: CeremonyInput): Ceremony!
+  deleteCeremonies: JSON
+}

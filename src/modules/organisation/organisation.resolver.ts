@@ -31,12 +31,24 @@ export class OrganisationResolver {
     }
   }
 
+  // @Mutation()
+  // async linkProfession(
+  //   @Args('orgPrfnInput') orgPrfnInput: OrgPrfnInput,
+  // ): Promise<any> {
+  //   try {
+  //     return await this.orgService.linkProfession(orgPrfnInput);
+  //   } catch (error) {
+  //     throw new HttpException(
+  //       error.message || 'Internal Server Error',
+  //       error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+  //     );
+  //   }
+  // }
+
   @Mutation()
-  async linkProfession(
-    @Args('orgPrfnInput') orgPrfnInput: OrgPrfnInput,
-  ): Promise<any> {
+  async deleteOrgs(): Promise<IResponse> {
     try {
-      return await this.orgService.linkProfession(orgPrfnInput);
+      return await this.orgService.deleteOrgs();
     } catch (error) {
       throw new HttpException(
         error.message || 'Internal Server Error',

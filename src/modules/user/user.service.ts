@@ -2,10 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { QueryRepository } from 'src/database/neo4j/query.repository';
 import { CreateUserInput } from './types/user.create.types';
 import { generateUuid } from 'src/utils/uuid.util';
+import { User } from 'src/database/graphql/graphql';
+import { PasswordHelper } from 'src/helpers/password.helper';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly queryRepo: QueryRepository) {}
+  constructor(
+    private readonly queryRepo: QueryRepository,
+    private readonly passwordHelper: PasswordHelper,
+  ) {}
 
   async userRegister(createUserInput: CreateUserInput): Promise<any> {
     const { firstName, lastName, password, email, phone, location } =
@@ -29,7 +34,7 @@ export class UserService {
           email,
           firstName,
           lastName,
-          password,
+          password: await this.passwordHelper.hashPassword(password),
           phone,
           location,
         },
@@ -94,6 +99,29 @@ export class UserService {
 
       return {
         id: properties.id,
+        ...properties,
+      };
+    }
+  }
+
+  async getByEmail(email: string): Promise<User> {
+    const query = await this.queryRepo
+      .initQuery()
+      .raw(
+        `
+        MATCH (user:User {email: $email})
+        RETURN user
+    `,
+        { email },
+      )
+      .run();
+
+    if (query?.length > 0) {
+      const {
+        user: { properties },
+      } = query[0];
+
+      return {
         ...properties,
       };
     }

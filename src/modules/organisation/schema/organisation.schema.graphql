@@ -6,7 +6,7 @@ type Org {
   password: String
   phone: String!
   location: String!
-  images: String
+  images: [String]
   media: String
 }
 
@@ -22,15 +22,19 @@ input OrgInput {
 
 type OrgPrfnRel {
   id: ID!
-  experinceTime: String!
+  experienceTime: String!
   description: String!
+  images: [String]
+  address: String
 }
 
 input OrgPrfnInput {
   orgId: String!
   prfnId: String!
-  experinceTime: String! # You can provide a period selection
+  experienceTime: String! # You can provide a period on selection
   description: String!
+  images: [String]
+  address: String
 }
 
 type Query {
@@ -40,4 +44,5 @@ type Query {
 
 type Mutation {
   linkProfession(orgPrfnInput: OrgPrfnInput!): OrgPrfnRel!
+  deleteOrgs: JSON
 }

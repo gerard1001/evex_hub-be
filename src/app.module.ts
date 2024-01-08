@@ -10,6 +10,8 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { Neo4jModule } from './database/neo4j/neo4j.module';
 import { UserModule } from './modules/user/user.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { CeremonyModule } from './modules/ceremony/ceremony.module';
 
 @Module({
   imports: [
@@ -22,12 +24,15 @@ import { UserModule } from './modules/user/user.module';
       typePaths: ['./**/*.graphql'],
       playground: false,
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
+      context: ({ req, res }) => ({ req, res }),
     }),
     Neo4jModule.forRootAsync(),
     EventModule,
     OrganisationModule,
     ProfessionModule,
     UserModule,
+    AuthModule,
+    CeremonyModule,
   ],
   providers: [AppService, AppResolver],
 })

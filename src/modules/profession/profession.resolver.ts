@@ -1,7 +1,9 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ProfessionService } from './profession.service';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { CreateProfessionInput } from './types/profession.create.types';
+import { ExpressContext } from 'apollo-server-express';
+import { log } from 'console';
 
 @Resolver()
 export class ProfessionResolver {
@@ -22,8 +24,11 @@ export class ProfessionResolver {
   }
 
   @Query()
-  async getProfessions(): Promise<any> {
+  async getProfessions(
+    @Context() context: { req: ExpressContext['req'] },
+  ): Promise<any> {
     try {
+      log(Object.keys(context.req.cookies));
       return await this.professionService.getProfessions();
     } catch (error) {
       throw new HttpException(

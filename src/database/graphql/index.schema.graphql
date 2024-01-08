@@ -9,3 +9,10 @@ type TResponse {
 type Query {
   welcomeMsg: String
 }
+
+type IResponse {
+  statusCode: Int!
+  message: String!
+  error: JSON
+  data: JSON
+}
